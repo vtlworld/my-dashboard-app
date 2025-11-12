@@ -31,7 +31,7 @@
             border-bottom: 1px solid #ddd; 
             overflow-x: auto; -webkit-overflow-scrolling: touch; 
         }
-        .container { padding: 15px; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
+        .container { padding: 10px; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
         .view { display: none; animation: fadeIn 0.3s; }
         .view.active { display: block; }
 
@@ -40,7 +40,7 @@
             flex: 1; padding: 15px 10px; text-align: center; 
             cursor: pointer; font-weight: 600; color: #666; 
             border-bottom: 3px solid transparent; transition: 0.3s; 
-            min-width: 90px; 
+            min-width: 80px; 
         }
         .tab.active { 
             color: #1976d2; 
@@ -71,15 +71,15 @@
 
         /* Summary Grids */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .summary-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .summary-box { background: white; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
+        .summary-grid-3 { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+        .summary-box { background: white; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
         .summary-val { display: block; font-size: 1.2rem; font-weight: bold; color: #1976d2; }
         .summary-label { font-size: 0.8rem; color: #666; }
 
-        /* Tables */
+        /* Tables (Still used for other tabs) */
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 600px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 0; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #f8f9fa; font-weight: 600; color: #444; }
         
         /* Loader */
@@ -88,37 +88,55 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* ============================================================
-        === NEW! MOBILE OPTIMIZATION (MEDIA QUERIES) ===
+        === NEW! CARD VIEW STYLES ===
         ============================================================
         */
+        .result-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+        .card-row:last-child {
+            border-bottom: none;
+        }
+        .card-label {
+            color: #666;
+        }
+        .card-value {
+            color: #111;
+            font-weight: 500;
+            text-align: right;
+        }
+        .card-value.status-paid {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .card-value.status-debit {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        /* Mobile fixes for other tabs */
         @media (max-width: 600px) {
-            .container {
-                padding: 10px; /* Tighter padding on mobile */
-            }
-            .card {
-                padding: 10px; /* Tighter padding on cards */
-            }
-            /* Stack all summary grids to 1 column */
             .summary-grid, .summary-grid-3 {
                 grid-template-columns: 1fr; 
-            }
-            .summary-box {
-                padding: 12px; /* Make summary boxes a bit bigger vertically */
-            }
-            /* Make table text smaller on mobile */
-            table {
-                font-size: 0.8rem; 
-                min-width: 0; /* Allow table to shrink */
-            }
-            th, td {
-                padding: 8px; /* Reduce table cell padding */
-            }
-            .app-bar h1 {
-                font-size: 1.1rem; /* Slightly smaller title */
-            }
-            .tab {
-                min-width: 80px; /* Make tabs a bit smaller to fit more */
-                padding: 12px 5px;
             }
         }
     </style>
@@ -171,22 +189,8 @@
                 </div>
             </div>
 
-            <div class="card" id="searchResultsCard" style="display:none;">
-                <div class="table-responsive">
-                    <table id="searchTable">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Part</th>
-                                <th>Qty</th>
-                                <th>Status</th>
-                                <th>Net Payment</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div id="searchResultsList">
                 </div>
-            </div>
         </div>
 
         <div id="view-inventory" class="view">
@@ -274,7 +278,6 @@
             </div>
         </div>
 
-
     </div>
 
     <script>
@@ -316,7 +319,7 @@
             if (!term) return alert("Please enter a search term.");
 
             toggleLoader(true);
-            document.getElementById('searchResultsCard').style.display = 'none';
+            document.getElementById('searchResultsList').style.display = 'none';
             document.getElementById('searchSummary').style.display = 'none';
 
             fetch(`${API_URL}?action=search&term=${encodeURIComponent(term)}&field=${encodeURIComponent(field)}`)
@@ -335,35 +338,55 @@
                 });
         }
 
+        // --- THIS FUNCTION IS NEW! ---
+        // It renders CARDS instead of table rows
         function renderSearchResults(data) {
             document.getElementById('sumCount').innerText = data.count;
             document.getElementById('sumValue').innerText = data.summaries.salesValue;
             document.getElementById('searchSummary').style.display = 'grid';
 
-            const tbody = document.querySelector('#searchTable tbody');
-            tbody.innerHTML = '';
+            const list = document.getElementById('searchResultsList');
+            list.innerHTML = ''; // Clear old results
+            
             if (data.rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No results found.</td></tr>';
+                list.innerHTML = '<p style="text-align:center">No results found.</p>';
             } else {
                 data.rows.forEach(row => {
-                    const tr = document.createElement('tr');
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    
+                    // Set color for status
                     let statusColor = '';
-                    if(row.Payment_Status === 'Paid') statusColor = 'color:green; font-weight:bold';
-                    else if(row.Payment_Status.includes('Debit')) statusColor = 'color:red; font-weight:bold';
-                    tr.innerHTML = `
-                        <td>${row.OrderID}</td>
-                        <td>${row.Part}</td>
-                        <td>${row.SalesQty}</td>
-                        <td style="${statusColor}">${row.Payment_Status}</td>
-                        <td>${row.Net_Payment}</td>
+                    if(row.Payment_Status === 'Paid') statusColor = 'status-paid';
+                    else if(row.Payment_Status.includes('Debit')) statusColor = 'status-debit';
+
+                    // Build the card HTML
+                    card.innerHTML = `
+                        <span class="card-header">${row.OrderID}</span>
+                        <div class="card-row">
+                            <span class="card-label">Part</span>
+                            <span class="card-value">${row.Part}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Qty</span>
+                            <span class="card-value">${row.SalesQty}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Payment Status</span>
+                            <span class="card-value ${statusColor}">${row.Payment_Status}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Net Payment</span>
+                            <span class="card-value ${statusColor}">${row.Net_Payment}</span>
+                        </div>
                     `;
-                    tbody.appendChild(tr);
+                    list.appendChild(card);
                 });
             }
-            document.getElementById('searchResultsCard').style.display = 'block';
+            list.style.display = 'block';
         }
 
-        // --- INVENTORY FUNCTIONS ---
+        // --- INVENTORY FUNCTIONS (Unchanged) ---
         function loadMonths() {
             toggleLoader(true);
             const select = document.getElementById('monthSelect');
@@ -427,7 +450,7 @@
             document.getElementById('inventoryResultCard').style.display = 'block';
         }
 
-        // --- RETURN FUNCTIONS ---
+        // --- RETURN FUNCTIONS (Unchanged) ---
         function loadReturns() {
             toggleLoader(true);
             appState.returnsLoaded = true; // Mark as "loading"
@@ -451,7 +474,7 @@
         function renderReturns(data) {
             document.getElementById('returnSellable').innerText = data.summaries.totalSellable;
             document.getElementById('returnUnsellable').innerText = data.summaries.totalUnsellable;
-            document.getElementById('returnFraud').innerText = data.summaries.totalFraud;
+            document.getElementById('returnFraud').innerText = data.summaries..totalFraud;
             
             const tbody = document.querySelector('#returnTable tbody');
             tbody.innerHTML = '';
