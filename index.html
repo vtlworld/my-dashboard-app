@@ -7,56 +7,35 @@
     <style>
         /* --- CSS STYLES --- */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; color: #333; }
-        
-        /* App Bar */
         .app-bar { background-color: #1976d2; color: white; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 1000; }
         .app-bar h1 { margin: 0; font-size: 1.2rem; font-weight: 500; }
-
-        /* Navigation Tabs */
         .nav-tabs { display: flex; background: white; border-bottom: 1px solid #ddd; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .tab { flex: 1; padding: 15px 10px; text-align: center; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: 0.3s; min-width: 90px; }
         .tab.active { color: #1976d2; border-bottom: 3px solid #1976d2; background-color: #f0f7ff; }
-
-        /* Container */
         .container { padding: 15px; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
-
-        /* Views */
         .view { display: none; animation: fadeIn 0.3s; }
         .view.active { display: block; }
-
-        /* Cards & Inputs */
         .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #555; }
         input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
-        
-        /* Buttons */
         .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; color: white; }
         .btn-primary { background-color: #1976d2; }
         .btn-primary:hover { background-color: #115293; }
         .btn:disabled { background-color: #ccc; cursor: not-allowed; }
-
-        /* Summary Boxes */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .summary-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .summary-box { background: white; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
         .summary-val { display: block; font-size: 1.2rem; font-weight: bold; color: #1976d2; }
         .summary-label { font-size: 0.8rem; color: #666; }
-
-        /* Tables */
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 600px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #f8f9fa; font-weight: 600; color: #444; }
         tr:hover { background-color: #f9f9f9; }
-
-        /* Loading Spinner */
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #1976d2; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Status Colors */
-        .status-paid { color: green; font-weight: bold; }
-        .status-debit { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -154,10 +133,38 @@
         </div>
 
         <div id="view-return" class="view">
+            <div class="summary-grid-3">
+                <div class="summary-box">
+                    <span id="returnSellable" class="summary-val" style="color:green">0</span>
+                    <span class="summary-label">Sellable</span>
+                </div>
+                <div class="summary-box">
+                    <span id="returnUnsellable" class="summary-val" style="color:orange">0</span>
+                    <span class="summary-label">Unsellable</span>
+                </div>
+                <div class="summary-box">
+                    <span id="returnFraud" class="summary-val" style="color:red">0</span>
+                    <span class="summary-label">Fraud</span>
+                </div>
+            </div>
             <div class="card">
-                <h2>Returns Dashboard</h2>
-                <p>This tab will show a summary of all returns.</p>
-                <p>We will build this next!</p>
+                <div class="table-responsive">
+                    <table id="returnTable">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Part</th>
+                                <th>Return Date</th>
+                                <th>Sellable</th>
+                                <th>Unsellable</th>
+                                <th>Fraud</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6" style="text-align:center;">Click tab to load data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
@@ -188,22 +195,28 @@
     <script>
         // --- CONFIGURATION ---
         const API_URL = "https://script.google.com/macros/s/AKfycbzklJTtTVOjDhB0MOxlsxeCiEw0EX-vVvSIC7bOBJuI80jRRXfYleWpuSgaCiedPCkh/exec";
+        
+        // --- STATE ---
+        const appState = {
+            inventoryMonthsLoaded: false,
+            returnsLoaded: false
+        };
 
         // --- TABS ---
         function switchTab(tabName) {
-            // Remove 'active' from all tabs and views
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             
-            // Add 'active' to the clicked tab and corresponding view
             document.getElementById('tab-' + tabName).classList.add('active');
             document.getElementById('view-' + tabName).classList.add('active');
             
             // --- Auto-load data for new tabs ---
-            if (tabName === 'inventory' && document.getElementById('monthSelect').options.length <= 1) {
-                loadMonths(); // Auto load months if not loaded
+            if (tabName === 'inventory' && !appState.inventoryMonthsLoaded) {
+                loadMonths(); 
             }
-            // We will add more auto-loaders here for the new tabs later
+            if (tabName === 'return' && !appState.returnsLoaded) {
+                loadReturns();
+            }
         }
 
         // --- UTILS ---
@@ -215,7 +228,6 @@
         function runSearch() {
             const term = document.getElementById('searchTerm').value;
             const field = document.getElementById('searchField').value;
-
             if (!term) return alert("Please enter a search term.");
 
             toggleLoader(true);
@@ -239,25 +251,20 @@
         }
 
         function renderSearchResults(data) {
-            // Update Summary
             document.getElementById('sumCount').innerText = data.count;
             document.getElementById('sumValue').innerText = data.summaries.salesValue;
             document.getElementById('searchSummary').style.display = 'grid';
 
-            // Update Table
             const tbody = document.querySelector('#searchTable tbody');
             tbody.innerHTML = '';
-            
             if (data.rows.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No results found.</td></tr>';
             } else {
                 data.rows.forEach(row => {
                     const tr = document.createElement('tr');
-                    // Color code status
                     let statusColor = '';
                     if(row.Payment_Status === 'Paid') statusColor = 'color:green; font-weight:bold';
                     else if(row.Payment_Status.includes('Debit')) statusColor = 'color:red; font-weight:bold';
-
                     tr.innerHTML = `
                         <td>${row.OrderID}</td>
                         <td>${row.Part}</td>
@@ -273,12 +280,14 @@
 
         // --- INVENTORY FUNCTIONS ---
         function loadMonths() {
+            toggleLoader(true);
             const select = document.getElementById('monthSelect');
             select.innerHTML = '<option>Loading...</option>';
             
             fetch(`${API_URL}?action=getInventoryMonths`)
                 .then(res => res.json())
                 .then(data => {
+                    toggleLoader(false);
                     select.innerHTML = '';
                     if (data.months && data.months.length > 0) {
                         data.months.forEach(m => {
@@ -287,6 +296,7 @@
                             opt.innerText = m.display;
                             select.appendChild(opt);
                         });
+                        appState.inventoryMonthsLoaded = true;
                     } else {
                         select.innerHTML = '<option value="">No data available</option>';
                     }
@@ -315,7 +325,6 @@
         function renderInventory(rows) {
             const tbody = document.querySelector('#inventoryTable tbody');
             tbody.innerHTML = '';
-
             if (!rows || rows.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">No data for this month.</td></tr>';
             } else {
@@ -332,6 +341,56 @@
             }
             document.getElementById('inventoryResultCard').style.display = 'block';
         }
+
+        // --- NEW RETURN FUNCTIONS ---
+        function loadReturns() {
+            toggleLoader(true);
+            appState.returnsLoaded = true; // Mark as "loading"
+            
+            fetch(`${API_URL}?action=getReturns`)
+                .then(res => res.json())
+                .then(data => {
+                    toggleLoader(false);
+                    if (data.status === 'error') {
+                        alert(data.message);
+                        return;
+                    }
+                    renderReturns(data);
+                })
+                .catch(e => {
+                    toggleLoader(false);
+                    alert("Error: " + e.message);
+                });
+        }
+
+        function renderReturns(data) {
+            // Update Summary
+            document.getElementById('returnSellable').innerText = data.summaries.totalSellable;
+            document.getElementById('returnUnsellable').innerText = data.summaries.totalUnsellable;
+            document.getElementById('returnFraud').innerText = data.summaries.totalFraud;
+            
+            // Update Table
+            const tbody = document.querySelector('#returnTable tbody');
+            tbody.innerHTML = '';
+            
+            if (data.rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No returns found.</td></tr>';
+            } else {
+                data.rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.OrderID}</td>
+                        <td>${row.Part}</td>
+                        <td>${new Date(row.ReturnDate).toLocaleDateString()}</td>
+                        <td style="color:green">${row.Sellable}</td>
+                        <td style="color:orange">${row.Unsellable}</td>
+                        <td style="color:red">${row.Fraud}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
     </script>
 </body>
 </html>
