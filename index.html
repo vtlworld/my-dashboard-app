@@ -13,8 +13,8 @@
         .app-bar h1 { margin: 0; font-size: 1.2rem; font-weight: 500; }
 
         /* Navigation Tabs */
-        .nav-tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .nav-tabs { display: flex; background: white; border-bottom: 1px solid #ddd; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab { flex: 1; padding: 15px 10px; text-align: center; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: 0.3s; min-width: 90px; }
         .tab.active { color: #1976d2; border-bottom: 3px solid #1976d2; background-color: #f0f7ff; }
 
         /* Container */
@@ -66,8 +66,12 @@
     </div>
 
     <div class="nav-tabs">
-        <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
-        <div class="tab" onclick="switchTab('inventory')">📦 Inventory</div>
+        <div id="tab-search" class="tab active" onclick="switchTab('search')">🔍 Search</div>
+        <div id="tab-inventory" class="tab" onclick="switchTab('inventory')">📦 Inventory</div>
+        <div id="tab-return" class="tab" onclick="switchTab('return')">↩️ Returns</div>
+        <div id="tab-misplaced" class="tab" onclick="switchTab('misplaced')">❓ Misplaced</div>
+        <div id="tab-claims" class="tab" onclick="switchTab('claims')">🛡️ Claims</div>
+        <div id="tab-payments" class="tab" onclick="switchTab('payments')">💳 Payments</div>
     </div>
 
     <div id="loader" class="loader"></div>
@@ -149,6 +153,36 @@
             </div>
         </div>
 
+        <div id="view-return" class="view">
+            <div class="card">
+                <h2>Returns Dashboard</h2>
+                <p>This tab will show a summary of all returns.</p>
+                <p>We will build this next!</p>
+            </div>
+        </div>
+        
+        <div id="view-misplaced" class="view">
+            <div class="card">
+                <h2>Misplaced Dashboard</h2>
+                <p>This tab will show data on misplaced items.</p>
+            </div>
+        </div>
+        
+        <div id="view-claims" class="view">
+            <div class="card">
+                <h2>Safety Claims Dashboard</h2>
+                <p>This tab will show all safety claim data.</p>
+            </div>
+        </div>
+        
+        <div id="view-payments" class="view">
+            <div class="card">
+                <h2>Payments Dashboard</h2>
+                <p>This tab will show a summary of all payments.</p>
+            </div>
+        </div>
+
+
     </div>
 
     <script>
@@ -157,19 +191,19 @@
 
         // --- TABS ---
         function switchTab(tabName) {
+            // Remove 'active' from all tabs and views
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             
-            if (tabName === 'search') {
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('view-search').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('view-inventory').classList.add('active');
-                if (document.getElementById('monthSelect').options.length <= 1) {
-                    loadMonths(); // Auto load months if not loaded
-                }
+            // Add 'active' to the clicked tab and corresponding view
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('view-' + tabName).classList.add('active');
+            
+            // --- Auto-load data for new tabs ---
+            if (tabName === 'inventory' && document.getElementById('monthSelect').options.length <= 1) {
+                loadMonths(); // Auto load months if not loaded
             }
+            // We will add more auto-loaders here for the new tabs later
         }
 
         // --- UTILS ---
