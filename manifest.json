@@ -1,0 +1,20 @@
+{
+  "short_name": "VTL OPERATIONS",
+  "name": "VTL Dashboard",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#1976d2",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/material-rounded/192/ffffff/dashboard-layout.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://img.icons8.com/material-rounded/512/ffffff/dashboard-layout.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
