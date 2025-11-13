@@ -493,6 +493,21 @@
             returnsLoaded: false
         };
 
+        // Cache for API responses
+        const cache = {
+            search: {},
+            inventory: {},
+            returns: null,
+            timestamp: {}
+        };
+
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+        function isCacheValid(key) {
+            if (!cache.timestamp[key]) return false;
+            return (Date.now() - cache.timestamp[key]) < CACHE_DURATION;
+        }
+
         // View Management
         function switchView(view) {
             currentView = view;
@@ -540,18 +555,50 @@
             const term = document.getElementById('searchTerm').value.trim();
             if (!term) return;
 
+            const cacheKey = `${term}-${currentSearchField}`;
+            
+            // Check cache first
+            if (isCacheValid('search-' + cacheKey) && cache.search[cacheKey]) {
+                renderSearchResults(cache.search[cacheKey]);
+                return;
+            }
+
             toggleLoader(true);
-            fetch(`${API_URL}?action=search&term=${encodeURIComponent(term)}&field=${encodeURIComponent(currentSearchField)}`)
-                .then(res => res.json())
+            
+            // Add timeout to API call
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+            fetch(`${API_URL}?action=search&term=${encodeURIComponent(term)}&field=${encodeURIComponent(currentSearchField)}`, {
+                signal: controller.signal
+            })
+                .then(res => {
+                    clearTimeout(timeoutId);
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
                 .then(data => {
                     toggleLoader(false);
-                    if (data.status === 'error') return alert(data.message);
+                    if (data.status === 'error') {
+                        showError('Search failed: ' + data.message);
+                        return;
+                    }
+                    // Cache the result
+                    cache.search[cacheKey] = data;
+                    cache.timestamp['search-' + cacheKey] = Date.now();
+                    
                     renderSearchResults(data);
                     updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
-                    alert("Error: " + e.message);
+                    clearTimeout(timeoutId);
+                    if (e.name === 'AbortError') {
+                        showError('Request timeout. Please check your connection and try again.');
+                    } else {
+                        showError('Failed to load data. Please check your internet connection.');
+                    }
+                    console.error('Search error:', e);
                 });
         }
 
@@ -601,23 +648,47 @@
 
         // INVENTORY
         function loadMonths() {
+            if (isCacheValid('months') && cache.inventory.months) {
+                populateMonthSelect(cache.inventory.months);
+                return;
+            }
+
             toggleLoader(true);
-            fetch(`${API_URL}?action=getInventoryMonths`)
-                .then(res => res.json())
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            fetch(`${API_URL}?action=getInventoryMonths`, { signal: controller.signal })
+                .then(res => {
+                    clearTimeout(timeoutId);
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
                 .then(data => {
                     toggleLoader(false);
-                    const select = document.getElementById('monthSelect');
-                    select.innerHTML = '<option value="">Select month...</option>';
-                    if (data.months && data.months.length > 0) {
-                        data.months.forEach(m => {
-                            const opt = document.createElement('option');
-                            opt.value = m.value;
-                            opt.innerText = m.display;
-                            select.appendChild(opt);
-                        });
-                        appState.inventoryLoaded = true;
-                    }
+                    cache.inventory.months = data.months;
+                    cache.timestamp['months'] = Date.now();
+                    populateMonthSelect(data.months);
+                    appState.inventoryLoaded = true;
+                })
+                .catch(e => {
+                    toggleLoader(false);
+                    clearTimeout(timeoutId);
+                    showError('Failed to load months. Please try again.');
+                    console.error('Months error:', e);
                 });
+        }
+
+        function populateMonthSelect(months) {
+            const select = document.getElementById('monthSelect');
+            select.innerHTML = '<option value="">Select month...</option>';
+            if (months && months.length > 0) {
+                months.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.value;
+                    opt.innerText = m.display;
+                    select.appendChild(opt);
+                });
+            }
         }
 
         document.getElementById('monthSelect').addEventListener('change', loadInventory);
@@ -626,17 +697,36 @@
             const month = document.getElementById('monthSelect').value;
             if (!month) return;
 
+            // Check cache
+            if (isCacheValid('inventory-' + month) && cache.inventory[month]) {
+                renderInventory(cache.inventory[month]);
+                return;
+            }
+
             toggleLoader(true);
-            fetch(`${API_URL}?action=getInventory&month=${encodeURIComponent(month)}`)
-                .then(res => res.json())
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            fetch(`${API_URL}?action=getInventory&month=${encodeURIComponent(month)}`, {
+                signal: controller.signal
+            })
+                .then(res => {
+                    clearTimeout(timeoutId);
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
                 .then(data => {
                     toggleLoader(false);
+                    cache.inventory[month] = data.rows;
+                    cache.timestamp['inventory-' + month] = Date.now();
                     renderInventory(data.rows);
                     updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
-                    alert("Error: " + e.message);
+                    clearTimeout(timeoutId);
+                    showError('Failed to load inventory. Please try again.');
+                    console.error('Inventory error:', e);
                 });
         }
 
@@ -683,20 +773,40 @@
 
         // RETURNS
         function loadReturns() {
+            // Check cache
+            if (isCacheValid('returns') && cache.returns) {
+                renderReturns(cache.returns);
+                return;
+            }
+
             toggleLoader(true);
             appState.returnsLoaded = true;
             
-            fetch(`${API_URL}?action=getReturns`)
-                .then(res => res.json())
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            
+            fetch(`${API_URL}?action=getReturns`, { signal: controller.signal })
+                .then(res => {
+                    clearTimeout(timeoutId);
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
                 .then(data => {
                     toggleLoader(false);
-                    if (data.status === 'error') return alert(data.message);
+                    if (data.status === 'error') {
+                        showError('Returns failed: ' + data.message);
+                        return;
+                    }
+                    cache.returns = data;
+                    cache.timestamp['returns'] = Date.now();
                     renderReturns(data);
                     updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
-                    alert("Error: " + e.message);
+                    clearTimeout(timeoutId);
+                    showError('Failed to load returns. Please try again.');
+                    console.error('Returns error:', e);
                 });
         }
 
@@ -749,6 +859,48 @@
         function updateLastSync() {
             document.getElementById('lastSync').innerText = new Date().toLocaleTimeString();
         }
+
+        // Error handling
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 70px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ef4444;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: 600;
+                max-width: 90%;
+                text-align: center;
+                animation: slideDown 0.3s ease;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 4000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
 
         // PWA
         if ('serviceWorker' in navigator) {
