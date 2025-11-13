@@ -11,17 +11,17 @@
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #1a1a2e; /* Dark theme background */
+            color: #e0e0e0;
             min-height: 100vh;
             padding-bottom: 80px;
         }
 
         /* Header */
         .header {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            background: #1f1f3a; /* Dark header */
             padding: 16px 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -36,10 +36,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #ffffff; /* White logo */
         }
         .refresh-btn {
             background: #6366f1;
@@ -63,11 +60,11 @@
 
         /* Search Bar */
         .search-container {
-            background: white;
+            background: #2a2a4a; /* Dark card */
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         .search-input-wrapper {
             position: relative;
@@ -76,10 +73,12 @@
         .search-input {
             width: 100%;
             padding: 14px 44px 14px 16px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #3a3a5a; /* Dark border */
             border-radius: 12px;
             font-size: 1rem;
             transition: border 0.3s;
+            background: #1f1f3a; /* Dark input */
+            color: #ffffff; /* White text */
         }
         .search-input:focus {
             outline: none;
@@ -103,8 +102,9 @@
         .chip {
             padding: 8px 16px;
             border-radius: 20px;
-            border: 2px solid #e5e7eb;
-            background: white;
+            border: 2px solid #3a3a5a;
+            background: #1f1f3a;
+            color: #e0e0e0;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
@@ -117,28 +117,57 @@
             border-color: #6366f1;
         }
 
+        /* NEW: Search Suggestions */
+        .suggestions-list {
+            list-style: none;
+            margin: -10px 0 12px 0;
+            padding: 0;
+            background: #1f1f3a;
+            border: 2px solid #3a3a5a;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .suggestions-list li {
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #e0e0e0;
+        }
+        .suggestions-list li:hover {
+            background: #6366f1;
+            color: white;
+        }
+        .suggestions-list li strong {
+            color: #6366f1;
+        }
+        .suggestions-list li:hover strong {
+            color: white;
+        }
+
+
         /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 20px;
-            /* --- THIS IS THE FIX for Sticky Summary --- */
+            /* --- FIX for Sticky Summary --- */
             position: sticky;
             top: 73px; /* Height of the header */
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a2e; /* Match body background */
             padding-top: 10px;
             z-index: 99;
         }
         .stat-card {
-            background: white;
+            background: #2a2a4a; /* Dark card */
             border-radius: 16px;
             padding: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         .stat-label {
             font-size: 0.75rem;
-            color: #6b7280;
+            color: #a0a0c0; /* Lighter text */
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -147,7 +176,7 @@
         .stat-value {
             font-size: 1.75rem;
             font-weight: 800;
-            color: #1f2937;
+            color: #ffffff; /* White text */
         }
         .stat-value.green { color: #10b981; }
         .stat-value.red { color: #ef4444; }
@@ -156,13 +185,12 @@
 
         /* Content Cards */
         .content-card {
-            background: white;
+            background: #2a2a4a; /* Dark card */
             border-radius: 16px;
             padding: 18px;
             margin-bottom: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
             transition: transform 0.2s, box-shadow 0.2s;
-            color: #1f2937; /* Text color for cards */
         }
         .content-card:active {
             transform: scale(0.98);
@@ -177,7 +205,7 @@
         .card-title {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1f2937;
+            color: #ffffff; /* White text */
         }
         .card-badge {
             padding: 4px 12px;
@@ -185,25 +213,30 @@
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
+            color: #ffffff; /* White text for all badges */
         }
-        .badge-paid { background: #d1fae5; color: #065f46; }
-        .badge-debit { background: #fee2e2; color: #991b1b; }
-        .badge-sellable { background: #d1fae5; color: #065f46; }
-        .badge-unsellable { background: #fed7aa; color: #92400e; }
-        .badge-fraud { background: #fee2e2; color: #991b1b; }
+        .badge-paid { background: #10b981; }
+        .badge-debit { background: #ef4444; }
+        .badge-settled { background: #f59e0b; }
+        .badge-unpaid { background: #6b7280; }
+        .badge-sellable { background: #10b981; }
+        .badge-unsellable { background: #f59e0b; }
+        .badge-fraud { background: #ef4444; }
         
         .card-detail {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
             font-size: 0.9rem;
+            border-bottom: 1px solid #3a3a5a; /* Dark border */
         }
+        .card-detail:last-child { border-bottom: none; }
         .detail-label {
-            color: #6b7280;
+            color: #a0a0c0; /* Lighter text */
             font-weight: 500;
         }
         .detail-value {
-            color: #1f2937;
+            color: #ffffff; /* White text */
             font-weight: 600;
         }
 
@@ -213,8 +246,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            background: #1f1f3a; /* Dark nav */
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
             display: flex;
             justify-content: space-around;
             padding: 8px 0 12px 0;
@@ -231,19 +264,17 @@
         .nav-icon {
             font-size: 1.5rem;
             margin-bottom: 4px;
-            filter: grayscale(100%);
-            opacity: 0.5;
+            color: #a0a0c0; /* Lighter icon */
             transition: all 0.3s;
         }
         .nav-item.active .nav-icon {
-            filter: grayscale(0%);
-            opacity: 1;
+            color: #6366f1;
             transform: scale(1.1);
         }
         .nav-label {
             font-size: 0.7rem;
             font-weight: 600;
-            color: #6b7280;
+            color: #a0a0c0; /* Lighter label */
         }
         .nav-item.active .nav-label {
             color: #6366f1;
@@ -279,8 +310,8 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            background: white;
-            color: #6b7280;
+            background: #2a2a4a; /* Dark card */
+            color: #a0a0c0; /* Lighter text */
             border-radius: 16px;
         }
         .empty-icon {
@@ -298,7 +329,7 @@
 
         /* Inventory Table */
         .table-card {
-            background: white;
+            background: #2a2a4a; /* Dark card */
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
@@ -309,19 +340,19 @@
             border-collapse: collapse;
         }
         .inventory-table th {
-            background: #f9fafb;
+            background: #1f1f3a; /* Dark header */
             padding: 12px 8px;
             text-align: left;
             font-size: 0.8rem;
             font-weight: 700;
-            color: #6b7280;
+            color: #a0a0c0;
             text-transform: uppercase;
         }
         .inventory-table td {
             padding: 12px 8px;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid #3a3a5a; /* Dark border */
             font-size: 0.9rem;
-            color: #1f2937;
+            color: #e0e0e0;
         }
         .inventory-table tr:last-child td {
             border-bottom: none;
@@ -329,19 +360,20 @@
 
         /* Month Selector */
         .month-selector {
-            background: white;
+            background: #2a2a4a; /* Dark card */
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         .month-selector select {
             width: 100%;
             padding: 14px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #3a3a5a;
             border-radius: 12px;
             font-size: 1rem;
-            background: white;
+            background: #1f1f3a;
+            color: #ffffff;
             cursor: pointer;
         }
     </style>
@@ -350,7 +382,7 @@
     <div class="header">
         <div class="header-content">
             <div class="logo">VTL Manager</div>
-            <button class="refresh-btn" onclick="refreshCurrentView()">↻ Refresh</button>
+            <button class="refresh-btn" onclick="refreshData()">↻ Refresh</button>
         </div>
     </div>
 
@@ -367,6 +399,8 @@
                         <input type="text" class="search-input" id="searchTerm" placeholder="Search orders, parts...">
                         <span class="search-icon">🔍</span>
                     </div>
+                    <ul class="suggestions-list" id="suggestionsList"></ul>
+                    
                     <div class="filter-chips">
                         <div class="chip active" data-field="All Fields">All</div>
                         <div class="chip" data-field="OrderID">Order ID</div>
@@ -386,7 +420,12 @@
                 </div>
             </div>
 
-            <div id="searchResults"></div>
+            <div id="searchResults">
+                <div class="empty-state">
+                    <div class="empty-icon">👋</div>
+                    <div class="empty-text">Welcome! Enter a search term above to begin.</div>
+                </div>
+            </div>
         </div>
 
         <div id="view-inventory" class="view">
@@ -395,8 +434,12 @@
                     <option value="">Select month...</option>
                 </select>
             </div>
-
-            <div id="inventoryResults"></div>
+            <div id="inventoryResults">
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <div class="empty-text">Select a month to see inventory.</div>
+                </div>
+            </div>
         </div>
 
         <div id="view-returns" class="view">
@@ -419,7 +462,12 @@
                 </div>
             </div>
 
-            <div id="returnsList"></div>
+            <div id="returnsList">
+                <div class="empty-state">
+                    <div class="empty-icon">↩️</div>
+                    <div class="empty-text">Loading returns data...</div>
+                </div>
+            </div>
         </div>
 
         <div id="view-payments" class="view">
@@ -429,13 +477,15 @@
                     <div class="stat-value green" id="paymentsPaid">₹0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Pending</div>
-                    <div class="stat-value orange" id="paymentsPending">₹0</div>
+                    <div class="stat-label">Debit / Loss</div>
+                    <div class="stat-value red" id="paymentsDebit">₹0</div>
                 </div>
             </div>
-            <div class="empty-state">
-                <div class="empty-icon">💳</div>
-                <div class="empty-text">Payment details coming soon</div>
+            <div id="paymentsList">
+                <div class="empty-state">
+                    <div class="empty-icon">💳</div>
+                    <div class="empty-text">Loading payment data...</div>
+                </div>
             </div>
         </div>
 
@@ -444,7 +494,7 @@
                 <div class="card-title" style="margin-bottom: 16px;">⚙️ Settings & More</div>
                 <div class="card-detail">
                     <span class="detail-label">Version</span>
-                    <span class="detail-value">1.0.0</span>
+                    <span class="detail-value">2.1.0</span>
                 </div>
                 <div class="card-detail">
                     <span class="detail-label">Last Sync</span>
@@ -453,10 +503,12 @@
             </div>
 
             <div class="content-card">
-                <div class="card-title" style="margin-bottom: 12px;">📊 Quick Stats</div>
-                <div class="empty-state">
-                    <div class="empty-icon">📈</div>
-                    <div class="empty-text">Analytics dashboard coming soon</div>
+                <div class="card-title" style="margin-bottom: 12px;">📊 Misplacements & Claims</div>
+                <div id="moreStatsList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📈</div>
+                        <div class="empty-text">Loading stats...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -486,31 +538,22 @@
     </div>
 
     <script>
+        // --- CONFIGURATION ---
         const API_URL = "https://script.google.com/macros/s/AKfycbzklJTtTVOjDhB0MOxlsxeCiEw0EX-vVvSIC7bOBJuI80jRRXfYleWpuSgaCiedPCkh/exec";
         
         let currentView = 'search';
         let currentSearchField = 'All Fields';
-        let appState = {
-            inventoryLoaded: false,
-            returnsLoaded: false
-        };
-
-        // Cache for API responses
-        const cache = {
-            search: {},
+        
+        // --- MASTER DATA CACHE ---
+        const appData = {
+            consolidated: [],
+            months: [],
             inventory: {},
-            returns: null,
-            timestamp: {}
+            dataLoaded: false,
+            monthsLoaded: false
         };
 
-        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-        function isCacheValid(key) {
-            if (!cache.timestamp[key]) return false;
-            return (Date.now() - cache.timestamp[key]) < CACHE_DURATION;
-        }
-
-        // View Management
+        // --- VIEW & TAB MANAGEMENT ---
         function switchView(view) {
             currentView = view;
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -519,26 +562,95 @@
             document.getElementById('view-' + view).classList.add('active');
             document.querySelectorAll('.nav-item')[['search','inventory','returns','payments','more'].indexOf(view)].classList.add('active');
 
-            // Auto-load data
-            if (view === 'inventory' && !appState.inventoryLoaded) {
+            // --- AUTO-LOAD DATA ---
+            if (!appData.dataLoaded) {
+                loadConsolidatedData();
+            } else {
+                // If data is loaded, just render the view
+                if (view === 'returns') renderReturns();
+                if (view === 'payments') renderPayments();
+                if (view === 'more') renderMoreStats();
+            }
+            
+            if (view === 'inventory' && !appData.monthsLoaded) {
                 loadMonths();
             }
-            if (view === 'returns' && !appState.returnsLoaded) {
-                loadReturns();
-            }
-        }
-
-        function refreshCurrentView() {
-            if (currentView === 'search') runSearch();
-            else if (currentView === 'inventory') loadInventory();
-            else if (currentView === 'returns') loadReturns(true); // Force refresh returns
         }
 
         function toggleLoader(show) {
             document.getElementById('loader').classList.toggle('show', show);
         }
 
-        // Filter Chips
+        // --- ERROR HANDLING ---
+        function showError(message) {
+            if (document.querySelector('.error-toast')) return;
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-toast';
+            errorDiv.style.cssText = `
+                position: fixed; top: 70px; left: 50%;
+                transform: translateX(-50%); background: #ef4444; color: white;
+                padding: 16px 24px; border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 10000;
+                font-weight: 600; max-width: 90%; text-align: center;
+                animation: slideDown 0.3s ease;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 4000);
+        }
+
+        // --- DATA LOADING & REFRESHING ---
+        function refreshData() {
+            loadConsolidatedData(true); // 'true' forces a refresh
+            if (currentView === 'inventory') {
+                appData.monthsLoaded = false;
+                appData.inventory = {};
+                loadMonths();
+            }
+        }
+        
+        function updateLastSync() {
+            document.getElementById('lastSync').innerText = new Date().toLocaleTimeString();
+        }
+
+        // --- MASTER DATA LOAD ---
+        function loadConsolidatedData(forceRefresh = false) {
+            if (appData.dataLoaded && !forceRefresh) return;
+            
+            toggleLoader(true);
+            const action = forceRefresh ? 'refreshData' : 'getConsolidatedData';
+            
+            fetch(`${API_URL}?action=${action}`)
+                .then(res => res.json())
+                .then(data => {
+                    toggleLoader(false);
+                    if (data.status === 'error') {
+                        showError('API Error: ' + data.message);
+                        return;
+                    }
+                    
+                    appData.consolidated = data.data;
+                    appData.dataLoaded = true;
+                    updateLastSync();
+                    
+                    // Now that data is loaded, render the current view
+                    if (currentView === 'returns') renderReturns();
+                    if (currentView === 'payments') renderPayments();
+                    if (currentView === 'more') renderMoreStats();
+                })
+                .catch(e => {
+                    toggleLoader(false);
+                    showError('Failed to fetch. Check connection.');
+                    console.error('Fetch error:', e);
+                });
+        }
+        
+        // --- SEARCH TAB ---
         document.querySelectorAll('.chip').forEach(chip => {
             chip.addEventListener('click', function() {
                 document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -547,85 +659,118 @@
             });
         });
 
-        // --- THIS IS THE FIX for Enter Key ---
-        // Listen for the form 'submit' event
+        // --- FIX for Enter/Search Key ---
         document.getElementById('searchForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop the page from reloading
+            e.preventDefault(); // Stop page reload
             runSearch();
+            document.getElementById('suggestionsList').innerHTML = ''; // Hide suggestions
         });
-
-
-        // SEARCH
-        function runSearch() {
-            const term = document.getElementById('searchTerm').value.trim();
-            if (!term) return;
-
-            const cacheKey = `${term}-${currentSearchField}`;
+        
+        // --- NEW: Search Suggestions ---
+        const searchInput = document.getElementById('searchTerm');
+        const suggestionsList = document.getElementById('suggestionsList');
+        
+        searchInput.addEventListener('input', () => {
+            if (!appData.dataLoaded) return;
             
-            // Check cache first
-            if (isCacheValid('search-' + cacheKey) && cache.search[cacheKey]) {
-                renderSearchResults(cache.search[cacheKey]);
+            const term = searchInput.value.trim().toLowerCase();
+            if (term.length < 2) { // Only show suggestions after 2 characters
+                suggestionsList.innerHTML = '';
                 return;
             }
 
-            toggleLoader(true);
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+            const suggestions = new Set(); // Use a Set to avoid duplicates
+            const field = currentSearchField;
 
-            fetch(`${API_URL}?action=search&term=${encodeURIComponent(term)}&field=${encodeURIComponent(currentSearchField)}`, {
-                signal: controller.signal
-            })
-                .then(res => {
-                    clearTimeout(timeoutId);
-                    if (!res.ok) throw new Error('Network response was not ok');
-                    return res.json();
-                })
-                .then(data => {
-                    toggleLoader(false);
-                    if (data.status === 'error') {
-                        showError('Search failed: ' + data.message);
-                        return;
+            appData.consolidated.forEach(row => {
+                if (suggestions.size > 5) return; // Limit to 5 suggestions
+                
+                if (field === 'All Fields' || field === 'OrderID') {
+                    if (row.OrderID && row.OrderID.toLowerCase().includes(term)) {
+                        suggestions.add(row.OrderID);
                     }
-                    // Cache the result
-                    cache.search[cacheKey] = data;
-                    cache.timestamp['search-' + cacheKey] = Date.now();
-                    
-                    renderSearchResults(data);
-                    updateLastSync();
-                })
-                .catch(e => {
-                    toggleLoader(false);
-                    clearTimeout(timeoutId);
-                    if (e.name === 'AbortError') {
-                        showError('Request timeout. Please check your connection and try again.');
-                    } else {
-                        showError('Failed to load data. Please check your internet connection.');
+                }
+                if (field === 'All Fields' || field === 'Part') {
+                     if (row.Part && row.Part.toLowerCase().includes(term)) {
+                        suggestions.add(row.Part);
                     }
-                    console.error('Search error:', e);
-                });
+                }
+            });
+
+            renderSuggestions(Array.from(suggestions), term);
+        });
+
+        function renderSuggestions(list, term) {
+            suggestionsList.innerHTML = '';
+            if (list.length === 0) return;
+            
+            list.forEach(item => {
+                const li = document.createElement('li');
+                // Highlight the matching part
+                const highlighted = item.replace(new RegExp(term, 'gi'), (match) => `<strong>${match}</strong>`);
+                li.innerHTML = highlighted;
+                li.onclick = () => {
+                    searchInput.value = item; // Put suggestion in search bar
+                    suggestionsList.innerHTML = ''; // Hide suggestions
+                    runSearch(); // Run search
+                };
+                suggestionsList.appendChild(li);
+            });
         }
 
-        function renderSearchResults(data) {
-            document.getElementById('sumCount').innerText = data.count;
-            document.getElementById('sumValue').innerText = '₹' + data.summaries.salesValue;
+
+        function runSearch() {
+            const term = document.getElementById('searchTerm').value.trim().toLowerCase();
+            if (!term) return;
+
+            if (!appData.dataLoaded) {
+                showError("Data still loading, please wait...");
+                return;
+            }
+
+            const results = [];
+            let totalValue = 0;
+
+            appData.consolidated.forEach(row => {
+                let match = false;
+                if (currentSearchField === "All Fields") {
+                    match = Object.values(row).some(cell => cell.toString().toLowerCase().includes(term));
+                } else {
+                    if (row[currentSearchField]) {
+                        match = row[currentSearchField].toString().toLowerCase().includes(term);
+                    }
+                }
+
+                if (match) {
+                    results.push(row);
+                    totalValue += Number(row.SalesValue || 0);
+                }
+            });
+
+            // Render the results
+            document.getElementById('sumCount').innerText = results.length;
+            document.getElementById('sumValue').innerText = '₹' + totalValue.toFixed(2);
             document.getElementById('searchStats').style.display = 'grid';
 
             const container = document.getElementById('searchResults');
             container.innerHTML = '';
 
-            if (data.rows.length === 0) {
+            if (results.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">🔍</div>
-                        <div class="empty-text">No results found</div>
+                        <div class="empty-text">No results found for "${term}"</div>
                     </div>
                 `;
                 return;
             }
 
-            data.rows.forEach(row => {
-                const badgeClass = row.Payment_Status === 'Paid' ? 'badge-paid' : 'badge-debit';
+            results.forEach(row => {
+                let badgeClass = 'badge-unpaid';
+                if (row.Payment_Status === 'Paid') badgeClass = 'badge-paid';
+                if (row.Payment_Status.includes('Debit')) badgeClass = 'badge-debit';
+                if (row.Payment_Status.includes('Settled')) badgeClass = 'badge-settled';
+                
                 const card = document.createElement('div');
                 card.className = 'content-card';
                 card.innerHTML = `
@@ -643,94 +788,73 @@
                     </div>
                     <div class="card-detail">
                         <span class="detail-label">Net Payment</span>
-                        <span class="detail-value">${row.Net_Payment || 'N/A'}</span>
+                        <span class="detail-value">₹${row.Net_Payment || '0.00'}</span>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // INVENTORY
+        // --- INVENTORY TAB ---
         function loadMonths() {
-            if (isCacheValid('months') && cache.inventory.months) {
-                populateMonthSelect(cache.inventory.months);
-                return;
-            }
-
             toggleLoader(true);
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-            fetch(`${API_URL}?action=getInventoryMonths`, { signal: controller.signal })
-                .then(res => {
-                    clearTimeout(timeoutId);
-                    if (!res.ok) throw new Error('Network response was not ok');
-                    return res.json();
-                })
+            fetch(`${API_URL}?action=getInventoryMonths`)
+                .then(res => res.json())
                 .then(data => {
                     toggleLoader(false);
-                    cache.inventory.months = data.months;
-                    cache.timestamp['months'] = Date.now();
-                    populateMonthSelect(data.months);
-                    appState.inventoryLoaded = true;
+                    if (data.status === 'error') {
+                        showError(data.message);
+                        return;
+                    }
+                    
+                    appData.months = data.months;
+                    appData.monthsLoaded = true;
+                    
+                    const select = document.getElementById('monthSelect');
+                    select.innerHTML = '<option value="">Select month...</option>';
+                    if (data.months && data.months.length > 0) {
+                        data.months.forEach(m => {
+                            const opt = document.createElement('option');
+                            opt.value = m.value;
+                            opt.innerText = m.display;
+                            select.appendChild(opt);
+                        });
+                    }
                 })
                 .catch(e => {
                     toggleLoader(false);
-                    clearTimeout(timeoutId);
-                    showError('Failed to load months. Please try again.');
-                    console.error('Months error:', e);
+                    showError("Failed to load months.");
                 });
         }
-
-        function populateMonthSelect(months) {
-            const select = document.getElementById('monthSelect');
-            select.innerHTML = '<option value="">Select month...</option>';
-            if (months && months.length > 0) {
-                months.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m.value;
-                    opt.innerText = m.display;
-                    select.appendChild(opt);
-                });
-            }
-        }
-
-        document.getElementById('monthSelect').addEventListener('change', loadInventory);
-
-        function loadInventory() {
+        
+        document.getElementById('monthSelect').addEventListener('change', () => loadInventory(false));
+        
+        function loadInventory(forceRefresh = false) {
             const month = document.getElementById('monthSelect').value;
             if (!month) return;
 
-            // Check cache
-            if (isCacheValid('inventory-' + month) && cache.inventory[month]) {
-                renderInventory(cache.inventory[month]);
+            if (!forceRefresh && appData.inventory[month]) {
+                renderInventory(appData.inventory[month]);
                 return;
             }
 
             toggleLoader(true);
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-            fetch(`${API_URL}?action=getInventory&month=${encodeURIComponent(month)}`, {
-                signal: controller.signal
-            })
-                .then(res => {
-                    clearTimeout(timeoutId);
-                    if (!res.ok) throw new Error('Network response was not ok');
-                    return res.json();
-                })
+            
+            fetch(`${API_URL}?action=getInventory&month=${encodeURIComponent(month)}`)
+                .then(res => res.json())
                 .then(data => {
                     toggleLoader(false);
-                    cache.inventory[month] = data.rows;
-                    cache.timestamp['inventory-' + month] = Date.now();
+                    if (data.status === 'error') {
+                        showError(data.message);
+                        return;
+                    }
+                    appData.inventory[month] = data.rows; // Cache it
                     renderInventory(data.rows);
                     updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
-                    clearTimeout(timeoutId);
-                    showError('Failed to load inventory. Please try again.');
-                    console.error('Inventory error:', e);
+                    showError('Failed to load inventory.');
                 });
         }
 
@@ -742,7 +866,7 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📦</div>
-                        <div class="empty-text">No inventory data</div>
+                        <div class="empty-text">No inventory data for this month.</div>
                     </div>
                 `;
                 return;
@@ -775,65 +899,56 @@
             container.appendChild(table);
         }
 
-        // RETURNS
-        function loadReturns(forceRefresh = false) {
-            // Check cache
-            if (!forceRefresh && isCacheValid('returns') && cache.returns) {
-                renderReturns(cache.returns);
-                return;
-            }
-
-            toggleLoader(true);
-            appState.returnsLoaded = true;
+        // --- RETURNS TAB ---
+        function renderReturns() {
+            if (!appData.dataLoaded) return; // Wait for data
             
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-            
-            fetch(`${API_URL}?action=getReturns`, { signal: controller.signal })
-                .then(res => {
-                    clearTimeout(timeoutId);
-                    if (!res.ok) throw new Error('Network response was not ok');
-                    return res.json();
-                })
-                .then(data => {
-                    toggleLoader(false);
-                    if (data.status === 'error') {
-                        showError('Returns failed: ' + data.message);
-                        return;
-                    }
-                    cache.returns = data;
-                    cache.timestamp['returns'] = Date.now();
-                    renderReturns(data);
-                    updateLastSync();
-                })
-                .catch(e => {
-                    toggleLoader(false);
-                    clearTimeout(timeoutId);
-                    showError('Failed to load returns. Please try again.');
-                    console.error('Returns error:', e);
-                });
-        }
-
-        function renderReturns(data) {
-            document.getElementById('returnSellable').innerText = data.summaries.totalSellable;
-            document.getElementById('returnUnsellable').innerText = data.summaries.totalUnsellable;
-            document.getElementById('returnFraud').innerText = data.summaries.totalFraud;
-            document.getElementById('returnTotal').innerText = data.rows.length;
-
             const container = document.getElementById('returnsList');
             container.innerHTML = '';
+            
+            let totalSellable = 0;
+            let totalUnsellable = 0;
+            let totalFraud = 0;
+            const returnRows = [];
 
-            if (data.rows.length === 0) {
+            appData.consolidated.forEach(row => {
+                const sellableQty = Number(row.Return_Sellable || 0);
+                const unsellableQty = Number(row.Return_Unsellable || 0);
+                const fraudQty = Number(row.Return_Fraud || 0);
+
+                if (sellableQty > 0 || unsellableQty > 0 || fraudQty > 0) {
+                    returnRows.push(row);
+                    totalSellable += sellableQty;
+                    totalUnsellable += unsellableQty;
+                    totalFraud += fraudQty;
+                }
+            });
+
+            // Update Stats
+            document.getElementById('returnSellable').innerText = totalSellable;
+            document.getElementById('returnUnsellable').innerText = totalUnsellable;
+            document.getElementById('returnFraud').innerText = totalFraud;
+            document.getElementById('returnTotal').innerText = returnRows.length;
+
+            if (returnRows.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">↩️</div>
-                        <div class="empty-text">No returns found</div>
+                        <div class="empty-text">No returns found in the data.</div>
                     </div>
                 `;
                 return;
             }
+            
+            // Sort by date (newest first)
+            returnRows.sort((a, b) => {
+                const dateA = a.ReturnDate ? new Date(a.ReturnDate).getTime() : 0;
+                const dateB = b.ReturnDate ? new Date(b.ReturnDate).getTime() : 0;
+                return dateB - dateA;
+            });
 
-            data.rows.forEach(row => {
+            // Render cards
+            returnRows.forEach(row => {
                 const card = document.createElement('div');
                 card.className = 'content-card';
                 
@@ -848,9 +963,9 @@
                     badgeText = 'Fraud';
                 }
 
-                // --- THIS IS THE FIX for N/A Date ---
+                // --- FIX for N/A Date ---
                 const returnDate = row.ReturnDate ? new Date(row.ReturnDate).toLocaleDateString() : 'N/A';
-                
+
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="card-title">${row.OrderID}</div>
@@ -872,40 +987,112 @@
                 container.appendChild(card);
             });
         }
-
-        function updateLastSync() {
-            document.getElementById('lastSync').innerText = new Date().toLocaleTimeString();
-        }
-
-        // Error handling
-        function showError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = `
-                position: fixed;
-                top: 70px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #ef4444;
-                color: white;
-                padding: 16px 24px;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                z-index: 10000;
-                font-weight: 600;
-                max-width: 90%;
-                text-align: center;
-                animation: slideDown 0.3s ease;
-            `;
-            errorDiv.textContent = message;
-            document.body.appendChild(errorDiv);
+        
+        // --- PAYMENTS TAB ---
+        function renderPayments() {
+            if (!appData.dataLoaded) return; // Wait for data
             
-            setTimeout((): {
-                errorDiv.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => errorDiv.remove(), 300);
-            }, 4000);
+            const container = document.getElementById('paymentsList');
+            container.innerHTML = '';
+            
+            let totalPaid = 0;
+            let totalDebit = 0;
+            const paymentRows = [];
+            
+            const processedOrders = new Set();
+            
+            appData.consolidated.forEach(row => {
+                if (row.OrderID && !processedOrders.has(row.OrderID)) {
+                    const netPayment = parseFloat(row.Net_Payment || 0);
+                    if (netPayment > 0) {
+                        totalPaid += netPayment;
+                        paymentRows.push(row);
+                    } else if (netPayment < 0) {
+                        totalDebit += netPayment;
+                        paymentRows.push(row);
+                    }
+                    processedOrders.add(row.OrderID);
+                }
+            });
+
+            // Update Stats
+            document.getElementById('paymentsPaid').innerText = '₹' + totalPaid.toFixed(2);
+            document.getElementById('paymentsDebit').innerText = '₹' + totalDebit.toFixed(2);
+            
+            if (paymentRows.length === 0) {
+                 container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💳</div>
+                        <div class="empty-text">No payment transactions found.</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            paymentRows.sort((a,b) => parseFloat(b.Net_Payment || 0) - parseFloat(a.Net_Payment || 0));
+            
+            paymentRows.forEach(row => {
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                
+                let badgeClass = 'badge-paid';
+                if (row.Payment_Status.includes('Debit')) badgeClass = 'badge-debit';
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${row.OrderID}</div>
+                        <div class="card-badge ${badgeClass}">${row.Payment_Status}</div>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Net Payment</span>
+                        <span class="detail-value">₹${row.Net_Payment}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // --- MORE TAB ---
+        function renderMoreStats() {
+            if (!appData.dataLoaded) return; // Wait for data
+            
+            const container = document.getElementById('moreStatsList');
+            container.innerHTML = '';
+            
+            let misQty = 0;
+            let claimAmount = 0;
+            
+            appData.consolidated.forEach(row => {
+                misQty += Number(row.Mis_MisQty || 0);
+                claimAmount += Number(row.ClaimAmount || 0);
+            });
+            
+            container.innerHTML = `
+                <div class="card-detail">
+                    <span class="detail-label">Total Misplaced Qty</span>
+                    <span class="detail-value">${misQty}</span>
+                </div>
+                <div class="card-detail">
+                    <span class="detail-label">Total Claimed Amount</span>
+                    <span class="detail-value">₹${claimAmount.toFixed(2)}</span>
+                </div>
+            `;
         }
 
-        // Add animation styles
+        // --- PWA REGISTRATION SCRIPT ---
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+              .then(registration => {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+              });
+          });
+        }
+
+        // --- ADD ANIMATION STYLES ---
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideDown {
@@ -919,14 +1106,10 @@
         `;
         document.head.appendChild(style);
 
-        // PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW failed:', err));
-            });
-        }
+        // --- INITIAL LOAD ---
+        // Load data as soon as the app starts
+        loadConsolidatedData();
+
     </script>
 </body>
 </html>
