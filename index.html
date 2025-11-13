@@ -2,318 +2,552 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
-    <title>VTL Dashboard</title>
-    
-    <meta name="theme-color" content="#1976d2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VTL Manager</title>
+    <meta name="theme-color" content="#6366f1">
     <link rel="manifest" href="manifest.json">
-
     <style>
-        /* --- GLOBAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background-color: #f4f6f8; 
-            color: #333; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
         }
-        
-        /* --- LAYOUT --- */
-        .app-bar { 
-            background-color: #1976d2; color: white; padding: 15px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-            display: flex; align-items: center; justify-content: center; 
-            position: sticky; top: 0; z-index: 1000; 
-        }
-        .app-bar h1 { margin: 0; font-size: 1.2rem; font-weight: 500; }
-        .nav-tabs { 
-            display: flex; background: white; 
-            border-bottom: 1px solid #ddd; 
-            overflow-x: auto; -webkit-overflow-scrolling: touch; 
-        }
-        .container { padding: 10px; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
-        .view { display: none; animation: fadeIn 0.3s; }
-        .view.active { display: block; }
 
-        /* --- COMPONENTS --- */
-        .tab { 
-            flex: 1; padding: 15px 10px; text-align: center; 
-            cursor: pointer; font-weight: 600; color: #666; 
-            border-bottom: 3px solid transparent; transition: 0.3s; 
-            min-width: 80px; 
+        /* Header */
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .tab.active { 
-            color: #1976d2; 
-            border-bottom: 3px solid #1976d2; 
-            background-color: #f0f7ff; 
-        }
-        .card { 
-            background: white; border-radius: 8px; 
-            padding: 15px; margin-bottom: 15px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-        }
-        .form-group { margin-bottom: 15px; }
-        label { 
-            display: block; margin-bottom: 5px; font-weight: bold; 
-            font-size: 0.9rem; color: #555; 
-        }
-        input, select { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; 
-            border-radius: 6px; font-size: 16px; box-sizing: border-box; 
-        }
-        .btn { 
-            width: 100%; padding: 14px; border: none; border-radius: 6px; 
-            font-size: 16px; font-weight: bold; cursor: pointer; 
-            transition: 0.2s; color: white; 
-        }
-        .btn-primary { background-color: #1976d2; }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
-
-        /* Summary Grids */
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .summary-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .summary-box { background: white; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
-        .summary-val { display: block; font-size: 1.2rem; font-weight: bold; color: #1976d2; }
-        .summary-label { font-size: 0.8rem; color: #666; }
-
-        /* Tables (Only for Inventory) */
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 0; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: #f8f9fa; font-weight: 600; color: #444; }
-        
-        /* Loader */
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #1976d2; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* ============================================================
-        === CARD VIEW STYLES ===
-        ============================================================
-        */
-        .result-card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-        .card-header {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #1976d2;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .card-row {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .refresh-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .refresh-btn:active { transform: scale(0.95); }
+
+        /* Main Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .search-input-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 14px 44px 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #9ca3af;
+        }
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .filter-chips::-webkit-scrollbar { height: 0; }
+        .chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .chip.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+        .stat-value.green { color: #10b981; }
+        .stat-value.red { color: #ef4444; }
+        .stat-value.orange { color: #f59e0b; }
+        .stat-value.blue { color: #6366f1; }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .content-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .card-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-paid { background: #d1fae5; color: #065f46; }
+        .badge-debit { background: #fee2e2; color: #991b1b; }
+        .badge-sellable { background: #d1fae5; color: #065f46; }
+        .badge-unsellable { background: #fed7aa; color: #92400e; }
+        .badge-fraud { background: #fee2e2; color: #991b1b; }
+        
+        .card-detail {
+            display: flex;
+            justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
             font-size: 0.9rem;
         }
-        .card-row:last-child {
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .detail-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px 0;
+            z-index: 100;
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .nav-item:active { transform: scale(0.9); }
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+        .nav-item.active .nav-icon {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+        .nav-item.active .nav-label {
+            color: #6366f1;
+        }
+
+        /* Loader */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .loader-overlay.show { display: flex; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        .empty-text {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* View Management */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* Inventory Table */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+        }
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table th {
+            background: #f9fafb;
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+        .inventory-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
+        }
+        .inventory-table tr:last-child td {
             border-bottom: none;
         }
-        .card-label {
-            color: #666;
+
+        /* Month Selector */
+        .month-selector {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        .card-value {
-            color: #111;
-            font-weight: 500;
-            text-align: right;
-        }
-        .card-value.status-paid { color: #28a745; font-weight: bold; }
-        .card-value.status-debit { color: #dc3545; font-weight: bold; }
-        .card-value.status-sellable { color: #28a745; font-weight: bold; }
-        .card-value.status-unsellable { color: #fd7e14; font-weight: bold; }
-        .card-value.status-fraud { color: #dc3545; font-weight: bold; }
-        
-        /* Mobile fixes */
-        @media (max-width: 600px) {
-            .summary-grid {
-                grid-template-columns: 1fr; 
-            }
-            .summary-grid-3 {
-                grid-template-columns: 1fr;
-            }
+        .month-selector select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-
-    <div class="app-bar">
-        <h1>VTL Manager</h1>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">VTL Manager</div>
+            <button class="refresh-btn" onclick="refreshCurrentView()">↻ Refresh</button>
+        </div>
     </div>
 
-    <div class="nav-tabs">
-        <div id="tab-search" class="tab active" onclick="switchTab('search')">🔍 Search</div>
-        <div id="tab-inventory" class="tab" onclick="switchTab('inventory')">📦 Inventory</div>
-        <div id="tab-return" class="tab" onclick="switchTab('return')">↩️ Returns</div>
-        <div id="tab-misplaced" class="tab" onclick="switchTab('misplaced')">❓ Misplaced</div>
-        <div id="tab-claims" class="tab" onclick="switchTab('claims')">🛡️ Claims</div>
-        <div id="tab-payments" class="tab" onclick="switchTab('payments')">💳 Payments</div>
+    <!-- Loader -->
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
     </div>
 
-    <div id="loader" class="loader"></div>
-
+    <!-- Main Container -->
     <div class="container">
         
+        <!-- SEARCH VIEW -->
         <div id="view-search" class="view active">
-            <div class="card">
-                <div class="form-group">
-                    <label>Search Term</label>
-                    <input type="text" id="searchTerm" placeholder="Enter Order ID, Part, etc.">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" id="searchTerm" placeholder="Search orders, parts...">
+                    <span class="search-icon">🔍</span>
                 </div>
-                <div class="form-group">
-                    <label>Search Field</label>
-                    <select id="searchField">
-                        <option value="All Fields">All Fields</option>
-                        <option value="OrderID">Order ID</option>
-                        <option value="Part">Part Code</option>
-                        <option value="Payment_Status">Payment Status</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="runSearch()">SEARCH ORDERS</button>
-            </div>
-
-            <div id="searchSummary" class="summary-grid" style="display:none;">
-                <div class="summary-box">
-                    <span id="sumCount" class="summary-val">0</span>
-                    <span class="summary-label">Orders Found</span>
-                </div>
-                <div class="summary-box">
-                    <span id="sumValue" class="summary-val" style="color:green">0</span>
-                    <span class="summary-label">Total Value</span>
+                <div class="filter-chips">
+                    <div class="chip active" data-field="All Fields">All</div>
+                    <div class="chip" data-field="OrderID">Order ID</div>
+                    <div class="chip" data-field="Part">Part Code</div>
+                    <div class="chip" data-field="Payment_Status">Payment</div>
                 </div>
             </div>
 
-            <div id="searchResultsList">
+            <div class="stats-grid" id="searchStats" style="display:none;">
+                <div class="stat-card">
+                    <div class="stat-label">Orders</div>
+                    <div class="stat-value blue" id="sumCount">0</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Value</div>
+                    <div class="stat-value green" id="sumValue">₹0</div>
+                </div>
+            </div>
+
+            <div id="searchResults"></div>
         </div>
 
+        <!-- INVENTORY VIEW -->
         <div id="view-inventory" class="view">
-            <div class="card">
-                <div class="form-group">
-                    <label>Select Month</label>
-                    <select id="monthSelect">
-                        <option value="">Loading months...</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="loadInventory()">REFRESH LEDGER</button>
+            <div class="month-selector">
+                <select id="monthSelect">
+                    <option value="">Select month...</option>
+                </select>
             </div>
 
-            <div class="card" id="inventoryResultCard" style="display:none;">
-                <div class="table-responsive">
-                    <table id="inventoryTable">
-                        <thead>
-                            <tr>
-                                <th>Part</th>
-                                <th>Opening</th>
-                                <th>Sold</th>
-                                <th>Closing</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
+            <div id="inventoryResults"></div>
         </div>
 
-        <div id="view-return" class="view">
-            <div class="summary-grid-3">
-                <div class="summary-box">
-                    <span id="returnSellable" class="summary-val" style="color:#28a745">0</span>
-                    <span class="summary-label">Sellable</span>
+        <!-- RETURNS VIEW -->
+        <div id="view-returns" class="view">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Sellable</div>
+                    <div class="stat-value green" id="returnSellable">0</div>
                 </div>
-                <div class="summary-box">
-                    <span id="returnUnsellable" class="summary-val" style="color:#fd7e14">0</span>
-                    <span class="summary-label">Unsellable</span>
+                <div class="stat-card">
+                    <div class="stat-label">Unsellable</div>
+                    <div class="stat-value orange" id="returnUnsellable">0</div>
                 </div>
-                <div class="summary-box">
-                    <span id="returnFraud" class="summary-val" style="color:#dc3545">0</span>
-                    <span class="summary-label">Fraud</span>
+                <div class="stat-card">
+                    <div class="stat-label">Fraud</div>
+                    <div class="stat-value red" id="returnFraud">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Returns</div>
+                    <div class="stat-value blue" id="returnTotal">0</div>
                 </div>
             </div>
-            <div id="returnList">
-                </div>
+
+            <div id="returnsList"></div>
         </div>
-        
-        <div id="view-misplaced" class="view">
-            <div class="card">
-                <h2>Misplaced Dashboard</h2>
-                <p>This tab will show data on misplaced items.</p>
-            </div>
-        </div>
-        
-        <div id="view-claims" class="view">
-            <div class="card">
-                <h2>Safety Claims Dashboard</h2>
-                <p>This tab will show all safety claim data.</p>
-            </div>
-        </div>
-        
+
+        <!-- PAYMENTS VIEW -->
         <div id="view-payments" class="view">
-            <div class="card">
-                <h2>Payments Dashboard</h2>
-                <p>This tab will show a summary of all payments.</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Paid</div>
+                    <div class="stat-value green" id="paymentsPaid">₹0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value orange" id="paymentsPending">₹0</div>
+                </div>
+            </div>
+            <div class="empty-state">
+                <div class="empty-icon">💳</div>
+                <div class="empty-text">Payment details coming soon</div>
             </div>
         </div>
 
+        <!-- MORE VIEW -->
+        <div id="view-more" class="view">
+            <div class="content-card">
+                <div class="card-title" style="margin-bottom: 16px;">⚙️ Settings & More</div>
+                <div class="card-detail">
+                    <span class="detail-label">Version</span>
+                    <span class="detail-value">1.0.0</span>
+                </div>
+                <div class="card-detail">
+                    <span class="detail-label">Last Sync</span>
+                    <span class="detail-value" id="lastSync">Never</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="card-title" style="margin-bottom: 12px;">📊 Quick Stats</div>
+                <div class="empty-state">
+                    <div class="empty-icon">📈</div>
+                    <div class="empty-text">Analytics dashboard coming soon</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchView('search')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">Search</div>
+        </div>
+        <div class="nav-item" onclick="switchView('inventory')">
+            <div class="nav-icon">📦</div>
+            <div class="nav-label">Inventory</div>
+        </div>
+        <div class="nav-item" onclick="switchView('returns')">
+            <div class="nav-icon">↩️</div>
+            <div class="nav-label">Returns</div>
+        </div>
+        <div class="nav-item" onclick="switchView('payments')">
+            <div class="nav-icon">💳</div>
+            <div class="nav-label">Payments</div>
+        </div>
+        <div class="nav-item" onclick="switchView('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+        </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbzklJTtTVOjDhB0MOxlsxeCiEw0EX-vVvSIC7bOBJuI80jRRXfYleWpuSgaCiedPCkh/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzklJTtTVOjDhB0MOxlsxeCiEw0EX-vVvSIC7bOBJuI80jRXfYleWpuSgaCiedPCkh/exec";
         
-        // --- STATE ---
-        const appState = {
-            inventoryMonthsLoaded: false,
+        let currentView = 'search';
+        let currentSearchField = 'All Fields';
+        let appState = {
+            inventoryLoaded: false,
             returnsLoaded: false
         };
 
-        // --- TABS ---
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        // View Management
+        function switchView(view) {
+            currentView = view;
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            document.getElementById('tab-' + tabName).classList.add('active');
-            document.getElementById('view-' + tabName).classList.add('active');
-            
-            // --- Auto-load data for new tabs ---
-            if (tabName === 'inventory' && !appState.inventoryMonthsLoaded) {
-                loadMonths(); 
+            document.getElementById('view-' + view).classList.add('active');
+            document.querySelectorAll('.nav-item')[['search','inventory','returns','payments','more'].indexOf(view)].classList.add('active');
+
+            // Auto-load data
+            if (view === 'inventory' && !appState.inventoryLoaded) {
+                loadMonths();
             }
-            if (tabName === 'return' && !appState.returnsLoaded) {
+            if (view === 'returns' && !appState.returnsLoaded) {
                 loadReturns();
             }
         }
 
-        // --- UTILS ---
-        function toggleLoader(show) {
-            document.getElementById('loader').style.display = show ? 'block' : 'none';
+        function refreshCurrentView() {
+            if (currentView === 'search') runSearch();
+            else if (currentView === 'inventory') loadInventory();
+            else if (currentView === 'returns') loadReturns();
         }
 
-        // --- SEARCH FUNCTIONS (NOW RENDERS CARDS) ---
+        function toggleLoader(show) {
+            document.getElementById('loader').classList.toggle('show', show);
+        }
+
+        // Filter Chips
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentSearchField = this.dataset.field;
+            });
+        });
+
+        // Search on Enter
+        document.getElementById('searchTerm').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') runSearch();
+        });
+
+        // SEARCH
         function runSearch() {
-            const term = document.getElementById('searchTerm').value;
-            const field = document.getElementById('searchField').value;
-            if (!term) return alert("Please enter a search term.");
+            const term = document.getElementById('searchTerm').value.trim();
+            if (!term) return;
 
             toggleLoader(true);
-            document.getElementById('searchResultsList').style.display = 'none';
-            document.getElementById('searchSummary').style.display = 'none';
-
-            fetch(`${API_URL}?action=search&term=${encodeURIComponent(term)}&field=${encodeURIComponent(field)}`)
+            fetch(`${API_URL}?action=search&term=${encodeURIComponent(term)}&field=${encodeURIComponent(currentSearchField)}`)
                 .then(res => res.json())
                 .then(data => {
                     toggleLoader(false);
-                    if (data.status === 'error') {
-                        alert(data.message);
-                        return;
-                    }
+                    if (data.status === 'error') return alert(data.message);
                     renderSearchResults(data);
+                    updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
@@ -323,59 +557,57 @@
 
         function renderSearchResults(data) {
             document.getElementById('sumCount').innerText = data.count;
-            document.getElementById('sumValue').innerText = data.summaries.salesValue;
-            document.getElementById('searchSummary').style.display = 'grid';
+            document.getElementById('sumValue').innerText = '₹' + data.summaries.salesValue;
+            document.getElementById('searchStats').style.display = 'grid';
 
-            const list = document.getElementById('searchResultsList');
-            list.innerHTML = ''; // Clear old results
-            
+            const container = document.getElementById('searchResults');
+            container.innerHTML = '';
+
             if (data.rows.length === 0) {
-                list.innerHTML = '<p style="text-align:center">No results found.</p>';
-            } else {
-                data.rows.forEach(row => {
-                    const card = document.createElement('div');
-                    card.className = 'result-card';
-                    
-                    let statusColor = '';
-                    if(row.Payment_Status === 'Paid') statusColor = 'status-paid';
-                    else if(row.Payment_Status.includes('Debit')) statusColor = 'status-debit';
-
-                    card.innerHTML = `
-                        <span class="card-header">${row.OrderID}</span>
-                        <div class="card-row">
-                            <span class="card-label">Part</span>
-                            <span class="card-value">${row.Part}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Qty</span>
-                            <span class="card-value">${row.SalesQty}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Payment Status</span>
-                            <span class="card-value ${statusColor}">${row.Payment_Status}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Net Payment</span>
-                            <span class="card-value ${statusColor}">${row.Net_Payment}</span>
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-text">No results found</div>
+                    </div>
+                `;
+                return;
             }
-            list.style.display = 'block';
+
+            data.rows.forEach(row => {
+                const badgeClass = row.Payment_Status === 'Paid' ? 'badge-paid' : 'badge-debit';
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${row.OrderID}</div>
+                        <div class="card-badge ${badgeClass}">${row.Payment_Status}</div>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Part Code</span>
+                        <span class="detail-value">${row.Part}</span>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Quantity</span>
+                        <span class="detail-value">${row.SalesQty}</span>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Net Payment</span>
+                        <span class="detail-value">${row.Net_Payment}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        // --- INVENTORY FUNCTIONS (Unchanged) ---
+        // INVENTORY
         function loadMonths() {
             toggleLoader(true);
-            const select = document.getElementById('monthSelect');
-            select.innerHTML = '<option>Loading...</option>';
-            
             fetch(`${API_URL}?action=getInventoryMonths`)
                 .then(res => res.json())
                 .then(data => {
                     toggleLoader(false);
-                    select.innerHTML = '';
+                    const select = document.getElementById('monthSelect');
+                    select.innerHTML = '<option value="">Select month...</option>';
                     if (data.months && data.months.length > 0) {
                         data.months.forEach(m => {
                             const opt = document.createElement('option');
@@ -383,25 +615,24 @@
                             opt.innerText = m.display;
                             select.appendChild(opt);
                         });
-                        appState.inventoryMonthsLoaded = true;
-                    } else {
-                        select.innerHTML = '<option value="">No data available</option>';
+                        appState.inventoryLoaded = true;
                     }
                 });
         }
 
+        document.getElementById('monthSelect').addEventListener('change', loadInventory);
+
         function loadInventory() {
             const month = document.getElementById('monthSelect').value;
-            if (!month) return alert("Please select a month.");
+            if (!month) return;
 
             toggleLoader(true);
-            document.getElementById('inventoryResultCard').style.display = 'none';
-
             fetch(`${API_URL}?action=getInventory&month=${encodeURIComponent(month)}`)
                 .then(res => res.json())
                 .then(data => {
                     toggleLoader(false);
                     renderInventory(data.rows);
+                    updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
@@ -410,39 +641,58 @@
         }
 
         function renderInventory(rows) {
-            const tbody = document.querySelector('#inventoryTable tbody');
-            tbody.innerHTML = '';
+            const container = document.getElementById('inventoryResults');
+            container.innerHTML = '';
+
             if (!rows || rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">No data for this month.</td></tr>';
-            } else {
-                rows.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="font-weight:bold">${row.PartCode}</td>
-                        <td>${row.OpeningStock}</td>
-                        <td style="color:green">${row.OrderedQty}</td>
-                        <td style="font-weight:bold">${row.ClosingStock}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-text">No inventory data</div>
+                    </div>
+                `;
+                return;
             }
-            document.getElementById('inventoryResultCard').style.display = 'block';
+
+            const table = document.createElement('div');
+            table.className = 'table-card';
+            table.innerHTML = `
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Part</th>
+                            <th>Opening</th>
+                            <th>Sold</th>
+                            <th>Closing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(row => `
+                            <tr>
+                                <td style="font-weight:700">${row.PartCode}</td>
+                                <td>${row.OpeningStock}</td>
+                                <td style="color:#10b981">${row.OrderedQty}</td>
+                                <td style="font-weight:700">${row.ClosingStock}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.appendChild(table);
         }
 
-        // --- RETURN FUNCTIONS (NOW RENDERS CARDS) ---
+        // RETURNS
         function loadReturns() {
             toggleLoader(true);
-            appState.returnsLoaded = true; // Mark as "loading"
+            appState.returnsLoaded = true;
             
             fetch(`${API_URL}?action=getReturns`)
                 .then(res => res.json())
                 .then(data => {
                     toggleLoader(false);
-                    if (data.status === 'error') {
-                        alert(data.message);
-                        return;
-                    }
+                    if (data.status === 'error') return alert(data.message);
                     renderReturns(data);
+                    updateLastSync();
                 })
                 .catch(e => {
                     toggleLoader(false);
@@ -451,59 +701,62 @@
         }
 
         function renderReturns(data) {
-            // Update Summary (THIS IS THE LINE I FIXED)
             document.getElementById('returnSellable').innerText = data.summaries.totalSellable;
             document.getElementById('returnUnsellable').innerText = data.summaries.totalUnsellable;
             document.getElementById('returnFraud').innerText = data.summaries.totalFraud;
-            
-            const list = document.getElementById('returnList');
-            list.innerHTML = ''; // Clear old results
-            
+            document.getElementById('returnTotal').innerText = data.rows.length;
+
+            const container = document.getElementById('returnsList');
+            container.innerHTML = '';
+
             if (data.rows.length === 0) {
-                list.innerHTML = '<p style="text-align:center">No returns found.</p>';
-            } else {
-                data.rows.forEach(row => {
-                    const card = document.createElement('div');
-                    card.className = 'result-card';
-                    card.innerHTML = `
-                        <span class="card-header">${row.OrderID}</span>
-                        <div class="card-row">
-                            <span class="card-label">Part</span>
-                            <span class="card-value">${row.Part}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Return Date</span>
-                            <span class="card-value">${new Date(row.ReturnDate).toLocaleDateString()}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Sellable</span>
-                            <span class="card-value status-sellable">${row.Sellable}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Unsellable</span>
-                            <span class="card-value status-unsellable">${row.Unsellable}</span>
-                        </div>
-                        <div class="card-row">
-                            <span class="card-label">Fraud</span>
-                            <span class="card-value status-fraud">${row.Fraud}</span>
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">↩️</div>
+                        <div class="empty-text">No returns found</div>
+                    </div>
+                `;
+                return;
             }
+
+            data.rows.forEach(row => {
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${row.OrderID}</div>
+                        <div class="card-badge badge-${row.Sellable > 0 ? 'sellable' : row.Unsellable > 0 ? 'unsellable' : 'fraud'}">
+                            ${row.Sellable > 0 ? 'Sellable' : row.Unsellable > 0 ? 'Unsellable' : 'Fraud'}
+                        </div>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Part</span>
+                        <span class="detail-value">${row.Part}</span>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Return Date</span>
+                        <span class="detail-value">${new Date(row.ReturnDate).toLocaleDateString()}</span>
+                    </div>
+                    <div class="card-detail">
+                        <span class="detail-label">Sellable / Unsellable / Fraud</span>
+                        <span class="detail-value">${row.Sellable} / ${row.Unsellable} / ${row.Fraud}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
-        
-        // --- PWA REGISTRATION SCRIPT ---
+
+        function updateLastSync() {
+            document.getElementById('lastSync').innerText = new Date().toLocaleTimeString();
+        }
+
+        // PWA
         if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-              .then(registration => {
-                console.log('ServiceWorker registration successful');
-              })
-              .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-              });
-          });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed:', err));
+            });
         }
     </script>
 </body>
