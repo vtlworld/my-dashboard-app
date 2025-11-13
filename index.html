@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>VTL Dashboard</title>
     
     <meta name="theme-color" content="#1976d2">
@@ -71,12 +71,12 @@
 
         /* Summary Grids */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .summary-grid-3 { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+        .summary-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .summary-box { background: white; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
         .summary-val { display: block; font-size: 1.2rem; font-weight: bold; color: #1976d2; }
         .summary-label { font-size: 0.8rem; color: #666; }
 
-        /* Tables (Still used for other tabs) */
+        /* Tables (Only for Inventory) */
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 0; }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
@@ -88,7 +88,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* ============================================================
-        === NEW! CARD VIEW STYLES ===
+        === CARD VIEW STYLES ===
         ============================================================
         */
         .result-card {
@@ -124,19 +124,19 @@
             font-weight: 500;
             text-align: right;
         }
-        .card-value.status-paid {
-            color: #28a745;
-            font-weight: bold;
-        }
-        .card-value.status-debit {
-            color: #dc3545;
-            font-weight: bold;
-        }
+        .card-value.status-paid { color: #28a745; font-weight: bold; }
+        .card-value.status-debit { color: #dc3545; font-weight: bold; }
+        .card-value.status-sellable { color: #28a745; font-weight: bold; }
+        .card-value.status-unsellable { color: #fd7e14; font-weight: bold; }
+        .card-value.status-fraud { color: #dc3545; font-weight: bold; }
         
-        /* Mobile fixes for other tabs */
+        /* Mobile fixes */
         @media (max-width: 600px) {
-            .summary-grid, .summary-grid-3 {
+            .summary-grid {
                 grid-template-columns: 1fr; 
+            }
+            .summary-grid-3 {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -224,37 +224,20 @@
         <div id="view-return" class="view">
             <div class="summary-grid-3">
                 <div class="summary-box">
-                    <span id="returnSellable" class="summary-val" style="color:green">0</span>
+                    <span id="returnSellable" class="summary-val" style="color:#28a745">0</span>
                     <span class="summary-label">Sellable</span>
                 </div>
                 <div class="summary-box">
-                    <span id="returnUnsellable" class="summary-val" style="color:orange">0</span>
+                    <span id="returnUnsellable" class="summary-val" style="color:#fd7e14">0</span>
                     <span class="summary-label">Unsellable</span>
                 </div>
                 <div class="summary-box">
-                    <span id="returnFraud" class="summary-val" style="color:red">0</span>
+                    <span id="returnFraud" class="summary-val" style="color:#dc3545">0</span>
                     <span class="summary-label">Fraud</span>
                 </div>
             </div>
-            <div class="card">
-                <div class="table-responsive">
-                    <table id="returnTable">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Part</th>
-                                <th>Return Date</th>
-                                <th>Sellable</th>
-                                <th>Unsellable</th>
-                                <th>Fraud</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="6" style="text-align:center;">Click tab to load data...</td></tr>
-                        </tbody>
-                    </table>
+            <div id="returnList">
                 </div>
-            </div>
         </div>
         
         <div id="view-misplaced" class="view">
@@ -312,7 +295,7 @@
             document.getElementById('loader').style.display = show ? 'block' : 'none';
         }
 
-        // --- SEARCH FUNCTIONS ---
+        // --- SEARCH FUNCTIONS (NOW RENDERS CARDS) ---
         function runSearch() {
             const term = document.getElementById('searchTerm').value;
             const field = document.getElementById('searchField').value;
@@ -338,8 +321,6 @@
                 });
         }
 
-        // --- THIS FUNCTION IS NEW! ---
-        // It renders CARDS instead of table rows
         function renderSearchResults(data) {
             document.getElementById('sumCount').innerText = data.count;
             document.getElementById('sumValue').innerText = data.summaries.salesValue;
@@ -355,12 +336,10 @@
                     const card = document.createElement('div');
                     card.className = 'result-card';
                     
-                    // Set color for status
                     let statusColor = '';
                     if(row.Payment_Status === 'Paid') statusColor = 'status-paid';
                     else if(row.Payment_Status.includes('Debit')) statusColor = 'status-debit';
 
-                    // Build the card HTML
                     card.innerHTML = `
                         <span class="card-header">${row.OrderID}</span>
                         <div class="card-row">
@@ -450,7 +429,7 @@
             document.getElementById('inventoryResultCard').style.display = 'block';
         }
 
-        // --- RETURN FUNCTIONS (Unchanged) ---
+        // --- RETURN FUNCTIONS (NOW RENDERS CARDS) ---
         function loadReturns() {
             toggleLoader(true);
             appState.returnsLoaded = true; // Mark as "loading"
@@ -472,27 +451,44 @@
         }
 
         function renderReturns(data) {
+            // Update Summary (THIS IS THE LINE I FIXED)
             document.getElementById('returnSellable').innerText = data.summaries.totalSellable;
             document.getElementById('returnUnsellable').innerText = data.summaries.totalUnsellable;
-            document.getElementById('returnFraud').innerText = data.summaries..totalFraud;
+            document.getElementById('returnFraud').innerText = data.summaries.totalFraud;
             
-            const tbody = document.querySelector('#returnTable tbody');
-            tbody.innerHTML = '';
+            const list = document.getElementById('returnList');
+            list.innerHTML = ''; // Clear old results
             
             if (data.rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No returns found.</td></tr>';
+                list.innerHTML = '<p style="text-align:center">No returns found.</p>';
             } else {
                 data.rows.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.OrderID}</td>
-                        <td>${row.Part}</td>
-                        <td>${new Date(row.ReturnDate).toLocaleDateString()}</td>
-                        <td style="color:green">${row.Sellable}</td>
-                        <td style="color:orange">${row.Unsellable}</td>
-                        <td style="color:red">${row.Fraud}</td>
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    card.innerHTML = `
+                        <span class="card-header">${row.OrderID}</span>
+                        <div class="card-row">
+                            <span class="card-label">Part</span>
+                            <span class="card-value">${row.Part}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Return Date</span>
+                            <span class="card-value">${new Date(row.ReturnDate).toLocaleDateString()}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Sellable</span>
+                            <span class="card-value status-sellable">${row.Sellable}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Unsellable</span>
+                            <span class="card-value status-unsellable">${row.Unsellable}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Fraud</span>
+                            <span class="card-value status-fraud">${row.Fraud}</span>
+                        </div>
                     `;
-                    tbody.appendChild(tr);
+                    list.appendChild(card);
                 });
             }
         }
