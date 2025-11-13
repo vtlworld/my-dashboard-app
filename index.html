@@ -117,7 +117,7 @@
             border-color: #6366f1;
         }
 
-        /* Search Suggestions */
+        /* NEW: Search Suggestions */
         .suggestions-list {
             list-style: none;
             margin: -10px 0 12px 0;
@@ -152,7 +152,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 20px;
-            /* --- Sticky Summary --- */
+            /* --- FIX for Sticky Summary --- */
             position: sticky;
             top: 73px; /* Height of the header */
             background: #1a1a2e; /* Match body background */
@@ -164,13 +164,6 @@
             border-radius: 16px;
             padding: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            /* --- NEW: Clickable styling --- */
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
         }
         .stat-label {
             font-size: 0.75rem;
@@ -301,9 +294,12 @@
             z-index: 1000;
         }
         .loader-overlay.show { display: flex; }
-        /* --- NEW: Rabbit Spinner --- */
         .spinner {
-            font-size: 50px;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin {
@@ -391,7 +387,8 @@
     </div>
 
     <div class="loader-overlay" id="loader">
-        <div class="spinner">🐇</div> </div>
+        <div class="spinner"></div>
+    </div>
 
     <div class="container">
         
@@ -403,6 +400,7 @@
                         <span class="search-icon">🔍</span>
                     </div>
                     <ul class="suggestions-list" id="suggestionsList"></ul>
+                    
                     <div class="filter-chips">
                         <div class="chip active" data-field="All Fields">All</div>
                         <div class="chip" data-field="OrderID">Order ID</div>
@@ -411,7 +409,6 @@
                     </div>
                 </div>
             </form>
-
             <div class="stats-grid" id="searchStats" style="display:none;">
                 <div class="stat-card">
                     <div class="stat-label">Orders</div>
@@ -447,20 +444,20 @@
 
         <div id="view-returns" class="view">
             <div class="stats-grid">
-                <div class="stat-card" onclick="renderReturns('sellable')">
+                <div class="stat-card">
                     <div class="stat-label">Sellable</div>
                     <div class="stat-value green" id="returnSellable">0</div>
                 </div>
-                <div class="stat-card" onclick="renderReturns('unsellable')">
+                <div class="stat-card">
                     <div class="stat-label">Unsellable</div>
                     <div class="stat-value orange" id="returnUnsellable">0</div>
                 </div>
-                <div class="stat-card" onclick="renderReturns('fraud')">
+                <div class="stat-card">
                     <div class="stat-label">Fraud</div>
                     <div class="stat-value red" id="returnFraud">0</div>
                 </div>
-                <div class="stat-card" onclick="renderReturns('all')">
-                    <div class="stat-label">Total (Show All)</div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Returns</div>
                     <div class="stat-value blue" id="returnTotal">0</div>
                 </div>
             </div>
@@ -570,7 +567,7 @@
                 loadConsolidatedData();
             } else {
                 // If data is loaded, just render the view
-                if (view === 'returns') renderReturns('all'); // Reset filter
+                if (view === 'returns') renderReturns();
                 if (view === 'payments') renderPayments();
                 if (view === 'more') renderMoreStats();
             }
@@ -642,7 +639,7 @@
                     updateLastSync();
                     
                     // Now that data is loaded, render the current view
-                    if (currentView === 'returns') renderReturns('all');
+                    if (currentView === 'returns') renderReturns();
                     if (currentView === 'payments') renderPayments();
                     if (currentView === 'more') renderMoreStats();
                 })
@@ -903,7 +900,7 @@
         }
 
         // --- RETURNS TAB ---
-        function renderReturns(filterType = 'all') { // NEW: Added filterType
+        function renderReturns() {
             if (!appData.dataLoaded) return; // Wait for data
             
             const container = document.getElementById('returnsList');
@@ -920,15 +917,7 @@
                 const fraudQty = Number(row.Return_Fraud || 0);
 
                 if (sellableQty > 0 || unsellableQty > 0 || fraudQty > 0) {
-                    // --- NEW: Apply Filter ---
-                    if (filterType === 'sellable' && sellableQty === 0) return;
-                    if (filterType === 'unsellable' && unsellableQty === 0) return;
-                    if (filterType === 'fraud' && fraudQty === 0) return;
-                    // if 'all', just continue
-                    
                     returnRows.push(row);
-                    
-                    // Sum totals regardless of filter
                     totalSellable += sellableQty;
                     totalUnsellable += unsellableQty;
                     totalFraud += fraudQty;
@@ -945,7 +934,7 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">↩️</div>
-                        <div class="empty-text">No returns found${filterType === 'all' ? '' : ' for this filter'}.</div>
+                        <div class="empty-text">No returns found in the data.</div>
                     </div>
                 `;
                 return;
@@ -991,7 +980,7 @@
                         <span class="detail-value">${returnDate}</span>
                     </div>
                     <div class="card-detail">
-                        <span class="detail-label">S / U / F</span>
+                        <span class="detail-label">Sellable / Unsellable / Fraud</span>
                         <span class="detail-value">${row.Return_Sellable || 0} / ${row.Return_Unsellable || 0} / ${row.Return_Fraud || 0}</span>
                     </div>
                 `;
@@ -1028,7 +1017,7 @@
 
             // Update Stats
             document.getElementById('paymentsPaid').innerText = '₹' + totalPaid.toFixed(2);
-            document.getElementById('paymentsDebit').innerText = '₹'E' + totalDebit.toFixed(2);
+            document.getElementById('paymentsDebit').innerText = '₹' + totalDebit.toFixed(2);
             
             if (paymentRows.length === 0) {
                  container.innerHTML = `
@@ -1118,6 +1107,7 @@
         document.head.appendChild(style);
 
         // --- INITIAL LOAD ---
+        // Load data as soon as the app starts
         loadConsolidatedData();
 
     </script>
